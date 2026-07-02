@@ -48,35 +48,20 @@ if ($data = $mform->get_data()) {
 
     $queued = 0;
     foreach ($draftfiles as $draftfile) {
-        // Create a tracking row first so we can key the stored file and task on its id.
-        $track = new stdClass();
-        $track->filename = $draftfile->get_filename();
-        $track->categoryid = $data->categoryid;
-        $track->status = 'queued';
-        $track->userid = $USER->id;
-        $track->timecreated = time();
-        $track->timemodified = $track->timecreated;
-        $trackid = $DB->insert_record('tool_bulkrestore_task', $track);
-
-        // Copy this backup into our own file area under itemid = tracking row id.
-        $filerecord = [
-            'contextid' => $context->id,
-            'component' => 'tool_bulkrestore',
-            'filearea' => 'backup',
-            'itemid' => $trackid,
-            'filepath' => '/',
-            'filename' => $draftfile->get_filename(),
-        ];
-        $fs->create_file_from_storedfile($filerecord, $draftfile);
-
-        // Queue the background restore for this file.
-        $task = new \tool_bulkrestore\task\restore_course_task();
-        $task->set_userid($USER->id);
-        $task->set_custom_data(['trackid' => $trackid]);
-        $taskid = \core\task\manager::queue_adhoc_task($task);
-        $DB->set_field('tool_bulkrestore_task', 'taskid', $taskid, ['id' => $trackid]);
-
-        $queued++;
+        $ext = strtolower(pathinfo($draftfile->get_filename(), PATHINFO_EXTENSION));
+        if ($ext === 'zip') {
+            // A zip may bundle several backups: unpack it and queue each .mbz inside.
+            foreach (\tool_bulkrestore\helper::extract_mbz_from_zip($draftfile) as $mbzpath) {
+                \tool_bulkrestore\helper::queue_backup($context, $USER->id, $data->categoryid,
+                    basename($mbzpath), $mbzpath);
+                $queued++;
+            }
+        } else {
+            // A directly uploaded .mbz backup.
+            \tool_bulkrestore\helper::queue_backup($context, $USER->id, $data->categoryid,
+                $draftfile->get_filename(), $draftfile);
+            $queued++;
+        }
     }
 
     // Clean up the draft area.

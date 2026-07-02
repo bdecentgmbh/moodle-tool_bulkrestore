@@ -41,12 +41,12 @@ class upload_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Multi-file upload of .mbz backups, saved to a draft area.
+        // Multi-file upload of .mbz backups (or .zip archives bundling several), saved to a draft area.
         $mform->addElement('filemanager', 'backupfiles',
             get_string('backupfiles', 'tool_bulkrestore'), null, [
                 'subdirs' => 0,
                 'maxfiles' => EDITOR_UNLIMITED_FILES,
-                'accepted_types' => ['.mbz'],
+                'accepted_types' => ['.mbz', '.zip'],
             ]);
         $mform->addHelpButton('backupfiles', 'backupfiles', 'tool_bulkrestore');
         $mform->addRule('backupfiles', get_string('required'), 'required', null, 'client');

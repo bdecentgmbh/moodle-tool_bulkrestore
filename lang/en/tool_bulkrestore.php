@@ -28,14 +28,14 @@ $string['pluginname'] = 'Bulk restore courses';
 $string['bulkrestore:restore'] = 'Bulk restore courses from backup files';
 
 // Upload form.
-$string['backupfiles'] = 'Backup files (.mbz)';
-$string['backupfiles_help'] = 'Upload one or more Moodle course backup (.mbz) files. Each file will be restored into a new course in the target category. The restores run in the background, so you can close this page once they are queued.';
+$string['backupfiles'] = 'Backup files (.mbz or .zip)';
+$string['backupfiles_help'] = 'Upload one or more Moodle course backup (.mbz) files, and/or .zip archives that each bundle several .mbz files. Every backup found is restored into a new course in the target category. The restores run in the background, so you can close this page once they are queued.';
 $string['targetcategory'] = 'Target category';
 $string['targetcategory_help'] = 'The category in which the new restored courses will be created.';
 $string['restore'] = 'Restore';
 
 // Queueing feedback.
-$string['queuednone'] = 'No backup files were uploaded.';
+$string['queuednone'] = 'No course backups (.mbz) were found in the upload.';
 $string['queued'] = '{$a} course backup(s) queued for restore. They will be restored in the background and appear below as they complete.';
 
 // Status table.
