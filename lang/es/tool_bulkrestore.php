@@ -56,5 +56,8 @@ $string['status_failed'] = 'Fallido';
 $string['taskname'] = 'Restaurar una copia de seguridad de curso de forma masiva';
 $string['restoredcoursename'] = 'Restaurado: {$a}';
 
+// Errors.
+$string['precheckfailed'] = 'No se pudo restaurar la copia de seguridad: {$a}';
+
 // Privacy.
 $string['privacy:metadata'] = 'El plugin de restauración masiva de cursos no almacena datos personales por sí mismo; los archivos de copia de seguridad subidos son procesados por el subsistema de copia de seguridad y restauración del núcleo.';

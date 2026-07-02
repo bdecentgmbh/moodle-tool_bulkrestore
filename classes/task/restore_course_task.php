@@ -110,8 +110,10 @@ class restore_course_task extends \core\task\adhoc_task {
                 $results = $rc->get_precheck_results();
                 if (!empty($results['errors'])) {
                     $rc->destroy();
-                    throw new \moodle_exception('restoreerror', 'error',
-                        '', implode('; ', array_map('strval', $results['errors'])));
+                    // Surface the precheck errors (e.g. "backup from a newer Moodle version")
+                    // as the visible failure reason.
+                    throw new \moodle_exception('precheckfailed', 'tool_bulkrestore', '',
+                        implode('; ', array_map('strval', $results['errors'])));
                 }
             }
             $rc->execute_plan();
@@ -123,14 +125,24 @@ class restore_course_task extends \core\task\adhoc_task {
             $fs->delete_area_files($context->id, 'tool_bulkrestore', 'backup', $trackid);
             fulldelete($fulltempdir);
         } catch (\Throwable $e) {
-            // Roll back the half-created course and surface the error.
+            // Record the real failure reason FIRST, so that a problem during the cleanup below can
+            // never mask it or leave the row stranded on "running".
+            $this->mark_failed($track, $e->getMessage());
+
+            // Best-effort rollback of the half-created course. Deleting a course fires core and
+            // third-party hooks that may themselves fail (e.g. a buggy before_course_deleted
+            // callback); never let that propagate out of the task or overwrite the recorded error.
             if ($newcourseid && $DB->record_exists('course', ['id' => $newcourseid])) {
-                delete_course($newcourseid, false);
+                try {
+                    delete_course($newcourseid, false);
+                } catch (\Throwable $cleanup) {
+                    debugging('tool_bulkrestore: could not delete course ' . $newcourseid .
+                        ' after a failed restore: ' . $cleanup->getMessage(), DEBUG_DEVELOPER);
+                }
             }
             if ($fulltempdir) {
                 fulldelete($fulltempdir);
             }
-            $this->mark_failed($track, $e->getMessage());
         }
     }
 

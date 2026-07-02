@@ -56,5 +56,8 @@ $string['status_failed'] = 'Failed';
 $string['taskname'] = 'Bulk restore a course backup';
 $string['restoredcoursename'] = 'Restored: {$a}';
 
+// Errors.
+$string['precheckfailed'] = 'The backup could not be restored: {$a}';
+
 // Privacy.
 $string['privacy:metadata'] = 'The Bulk restore courses plugin does not store any personal data itself; uploaded backup files are processed by the core backup and restore subsystem.';

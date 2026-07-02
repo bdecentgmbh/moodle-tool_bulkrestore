@@ -56,5 +56,8 @@ $string['status_failed'] = 'Fehlgeschlagen';
 $string['taskname'] = 'Kurssicherung per Massenwiederherstellung wiederherstellen';
 $string['restoredcoursename'] = 'Wiederhergestellt: {$a}';
 
+// Errors.
+$string['precheckfailed'] = 'Die Sicherung konnte nicht wiederhergestellt werden: {$a}';
+
 // Privacy.
 $string['privacy:metadata'] = 'Das Plugin „Kurse per Massenwiederherstellung wiederherstellen“ speichert selbst keine personenbezogenen Daten; hochgeladene Sicherungsdateien werden vom Kern-Subsystem für Sicherung und Wiederherstellung verarbeitet.';
